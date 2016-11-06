@@ -1,0 +1,15 @@
+{
+  "name": "tpx3_converter_daemon",
+  "version": "1.0.0",
+  "description": "Daemon for watching file changes in specified folder and converting data from ASCII to ROOT format",
+  "main": "daemon_main.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "Jiri Vycpalek",
+  "license": "ISC",
+  "dependencies": {
+    "chokidar": "^1.6.1",
+    "sleep": "^4.0.0"
+  }
+}
