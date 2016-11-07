@@ -2,20 +2,25 @@ var chokidar = require('chokidar');
 var exec = require('child_process').exec;
 var fs = require('fs');
 
-var maxProcesses = 4;
+var maxProcesses = 8;
 var activeProcesses = 0;
 var files = []; 
+var datapath = '/data/tpx3-visualization-data/';
+var rawdatapath = datapath + 'RAW/';
 
+console.log('Converter daemon/watcher started...');
 // Watch the ./data directory
-var watcher_new = chokidar.watch('.', 
+var watcher_new = chokidar.watch(rawdatapath, 
 	{
 		// ignores .dotfiles and files starting with [wu] (Web Upload)
 		ignored: /([\/\\]\.|[\/\\]\[wu\])/,
 		awaitWriteFinish: {
 		    stabilityThreshold: 2000
 		  },
-		cwd: 'data'
+		ignoreInitial: true,
+		cwd: rawdatapath
 	});
+console.log('Watching folder "' + datapath + 'RAW/" for new files...');
 
 watcher_new.on('add', function(path){
 	console.log('Added file ' + path);
@@ -30,13 +35,14 @@ var watcher_progress = chokidar.watch('.',
 	});
 
 watcher_progress.on('unlink', function(path){
-	console.log(path + " file unlinked.");
+	console.log("File " + path + " no longer in progress.");
 })
 
 
 function tryToProcessFile(path){
 	// All processes are busy at the moment, store file for later processing
 	if (activeProcesses >= maxProcesses){
+		console.log("All processes busy, storing file for later converting.");
 		exec('echo "' + path + '" >> to_process.txt');
 	// At least one process free, process file immediately
 	} else {
