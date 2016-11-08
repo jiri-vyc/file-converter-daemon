@@ -1,0 +1,14 @@
+[Unit]
+Description=TPX3 Converter Daemon
+After=network.target firewalld.target
+[Service]
+ExecStart=/usr/bin/node /opt/tpx3-converter-daemon/daemon_main.js
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=tpx3-converter-daemon
+User=visualization
+Environment=NODE_ENV=production
+Environment=LD_LIBRARY_PATH=/lib64/root
+[Install]
+WantedBy=multi-user.target
