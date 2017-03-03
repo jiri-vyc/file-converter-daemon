@@ -4,12 +4,15 @@
   "description": "Daemon for watching file changes in specified folder and converting data from ASCII to ROOT format",
   "main": "daemon_main.js",
   "scripts": {
-    "test": "test"
+    "test": "test",
+    "start": "node daemon_main.js"
   },
   "author": "Jiri Vycpalek",
   "license": "ISC",
   "dependencies": {
     "chokidar": "^1.6.1",
+    "mkdirp": "^0.5.1",
+    "nedb": "^1.8.0",
     "sleep": "^4.0.0"
   }
 }

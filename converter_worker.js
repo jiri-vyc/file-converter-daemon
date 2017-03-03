@@ -9,8 +9,6 @@ var rootdatapath = datapath + 'ROOT/';
 
 var filepath = process.argv[2];
 
-// sleep.sleep(Math.floor(Math.random() * 5 + 5));
-
 var filedir = path.dirname(filepath);
 
 try {
