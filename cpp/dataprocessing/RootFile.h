@@ -11,6 +11,7 @@
 #include "TH1F.h"
 #include "TPaveStats.h"
 #include "TColor.h"
+#include "TTreeReader.h"
 
 /**
 * Wrapper over a single ROOT file - handles its opening, closing and getting the correct data from it (again represented as their respective wrapper objects)
@@ -37,6 +38,7 @@ public:
 
 	/// Creates a new root file with specified name. Sets failed state and prints error message if it is unable to do so.
 	RootFile(std::string filename){
+		TTreeReader reader;
 		this->m_filename = filename;
 		this->m_treename = PixelTree::defaultDataTreeName;	
 		this->m_indextreename = RootFile::defaultIndexTreeName;

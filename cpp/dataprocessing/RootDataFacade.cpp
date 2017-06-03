@@ -176,6 +176,8 @@ ULong64_t RootDataFacade::GetIndex(Long64_t triggerNo, Double_t time)
 
 PixelInterval * RootDataFacade::GetInterval(Double_t start_time, Double_t interval_period)
 {
+	//float MEASURE_time_START = TimeUtils::GetMyCPUTime(TimeUtils::SECONDS);
+
     if (!this->m_currentRootFile->IsOk()) {
     	std::cout << "Root file not ok" << std::endl;
     	return new PixelInterval();
@@ -188,6 +190,10 @@ PixelInterval * RootDataFacade::GetInterval(Double_t start_time, Double_t interv
 	ULong64_t endIndex = this->GetIndex(triggerNo + delta, start_time + interval_period);
 	Double_t triggerStartTime = this->GetTriggerStartTime(triggerNo);
 
+	//float MEASURE_time_END = TimeUtils::GetMyCPUTime(TimeUtils::MILLISECONDS);
+	//std::cout << "Time1: " << MEASURE_time_END - MEASURE_time_START << std::endl;
+	//MEASURE_time_START = MEASURE_time_END;
+	
 	PixelInterval * pixInterval = new PixelInterval();
 	pixInterval->SetStartTime(triggerStartTime);
 
@@ -198,6 +204,8 @@ PixelInterval * RootDataFacade::GetInterval(Double_t start_time, Double_t interv
 		pixInterval->PushBack(*currPixel);
 		delete currPixel;
 	}
+	//MEASURE_time_END = TimeUtils::GetMyCPUTime(TimeUtils::MILLISECONDS);
+	//std::cout << "Time2: " << MEASURE_time_END - MEASURE_time_START << std::endl;
 
 	return pixInterval;
 }

@@ -55,7 +55,7 @@ public:
 	/** Gets precise processor time in specified format, Unix systems */
 	static float GetMyCPUTime(int format)
 	{
-		return ((float)clock()/CLOCKS_PER_SEC * 100 / 100000 * format); // time in miliseconds
+		return ((float)clock()/CLOCKS_PER_SEC * 100 / 100 * format); // time in specified format
 	}
 	#endif
 

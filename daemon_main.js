@@ -26,9 +26,9 @@ db.loadDatabase(function (err) {
 
 console.log('Converter daemon/watcher started...');
 // Watch the ./data directory
-var watcher_new = chokidar.watch(rawdatapath, 
+var watcher_new = chokidar.watch(rawdatapath + '/ATLAS/TPX3_9/', 
 	{
-		// ignores .dotfiles and files starting with [wu] (Web Upload)
+		// ignores .dotfiles and files starting with wu- (Web Upload)
 		ignored: /([\/\\]\.|[\/\\]wu-)/,
 		awaitWriteFinish: {
 		    stabilityThreshold: 6000
@@ -36,7 +36,7 @@ var watcher_new = chokidar.watch(rawdatapath,
 		ignoreInitial: true,
 		cwd: rawdatapath
 	});
-console.log('Watching folder "' + rawdatapath + '/" for new files...');
+console.log('Watching folder "' + rawdatapath + '/ATLAS/TPX3_9/" for new files...');
 
 watcher_new.on('add', function(path){
 	console.log('Added file ' + path);
@@ -45,8 +45,8 @@ watcher_new.on('add', function(path){
 
 var watcher_progress = chokidar.watch('in_progress',
 	{
-		// ignores .dotfiles and files starting with [wu] (Web Upload)
-		ignored: /([\/\\]\.|[\/\\]\[wu\])/,
+		// ignores .dotfiles and files starting with wu- (Web Upload)
+		ignored: /([\/\\]\.|[\/\\]wu-)/,
 		cwd: 'in_progress'
 	});
 

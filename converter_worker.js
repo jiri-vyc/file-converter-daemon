@@ -18,6 +18,8 @@ try {
     mkdirp.sync(rootdatapath + filedir);
 }
 
+console.log(filepath);
+
 tpx3data.convert(filepath, filepath);
 
 console.log('Done converting file: ' + filepath);

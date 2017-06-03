@@ -106,7 +106,18 @@ Release/obj.target/tpx3data/dataprocessing/RootFile.o: \
  /home/jiri/root_build/include/TBox.h \
  /home/jiri/root_build/include/TText.h \
  /home/jiri/root_build/include/TLine.h \
- /home/jiri/root_build/include/TColor.h
+ /home/jiri/root_build/include/TColor.h \
+ /home/jiri/root_build/include/TTreeReader.h \
+ /home/jiri/root_build/include/TTreeReaderUtils.h \
+ /home/jiri/root_build/include/TBranchProxyDirector.h \
+ /home/jiri/root_build/include/TBranchProxy.h \
+ /home/jiri/root_build/include/TClonesArray.h \
+ /home/jiri/root_build/include/Riostream.h \
+ /home/jiri/root_build/include/TError.h \
+ /home/jiri/root_build/include/TVirtualCollectionProxy.h \
+ /home/jiri/root_build/include/TClassRef.h \
+ /home/jiri/root_build/include/TRef.h \
+ /home/jiri/root_build/include/TTreeReaderValue.h
 ../dataprocessing/RootFile.cpp:
 ../dataprocessing/RootFile.h:
 ../dataprocessing/SingleIndex.h:
@@ -222,3 +233,14 @@ Release/obj.target/tpx3data/dataprocessing/RootFile.o: \
 /home/jiri/root_build/include/TText.h:
 /home/jiri/root_build/include/TLine.h:
 /home/jiri/root_build/include/TColor.h:
+/home/jiri/root_build/include/TTreeReader.h:
+/home/jiri/root_build/include/TTreeReaderUtils.h:
+/home/jiri/root_build/include/TBranchProxyDirector.h:
+/home/jiri/root_build/include/TBranchProxy.h:
+/home/jiri/root_build/include/TClonesArray.h:
+/home/jiri/root_build/include/Riostream.h:
+/home/jiri/root_build/include/TError.h:
+/home/jiri/root_build/include/TVirtualCollectionProxy.h:
+/home/jiri/root_build/include/TClassRef.h:
+/home/jiri/root_build/include/TRef.h:
+/home/jiri/root_build/include/TTreeReaderValue.h:

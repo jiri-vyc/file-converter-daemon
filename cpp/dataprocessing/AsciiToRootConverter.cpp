@@ -125,7 +125,7 @@ RootFile * AsciiToRootConverter::ConvertTPX3Data(std::string filename, std::stri
 			throw "Cannot read first line of file";
 		}
 		// Determine whether first index line of the file corresponds with the new or old data format
-		if (line.at(0) == '#'){
+		if (line.at(0) == '#' || line.at(3) == '#'){
 			this->newFormat = true;
 		} else {
 			this->newFormat = false;

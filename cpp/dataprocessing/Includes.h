@@ -5,7 +5,7 @@ A file containing all the requirement dependencies for all the classes, to simpl
 All the headers should use #pragma once, as this file uses, so that everything is included only exactly once and there are no double definition errors.
 */
 #ifndef HOMEPATH
-#define HOMEPATH "/home/jiri/TPX3_Visualization/tpx3_converter_daemon/"
+#define HOMEPATH "/home/jiri/TPX3_Visualization/tpx3_datavisualizationserver/app/"
 #endif
 
 #ifndef DATAPATH
