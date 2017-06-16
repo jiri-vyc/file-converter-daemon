@@ -1,5 +1,4 @@
 var tpx3data = require('./cpp/build/Release/tpx3data');
-var sleep = require('sleep');
 var path = require('path');
 var mkdirp = require('mkdirp');
 var fs = require('fs');
@@ -11,7 +10,6 @@ var rootdatapath = path.join(datapath,'ROOT/');
 var filepath = process.argv[2];
 
 var filedir = path.dirname(filepath);
-
 
 // Check if the given folder exists, if not, create it
 try {

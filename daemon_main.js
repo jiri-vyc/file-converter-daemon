@@ -14,7 +14,7 @@ var rawdatapath = path.join(datapath + 'RAW');
 var log = config.logMethod;
 
 var Datastore = require('nedb')
-  , db = new Datastore({ filename: 'db/database' });
+  , db = new Datastore({ filename: config.databaseFile });
 
 db.loadDatabase(function (err) {
   if (!err){
@@ -119,7 +119,7 @@ function tryToProcessFile(path){
 	}
 }
 
-
+// The main converting function, puts the file in the "in_progress" and spawns the converting child process
 function convertFile(filepath){
 	log('Starting process converting file ' + filepath);
 	var filedir = path.dirname(filepath);
@@ -138,6 +138,7 @@ function convertFile(filepath){
 	});
 
 	// Start converting
+	// Asynchronously spawn a child process with the supplied script
 	exec('node converter_worker.js ' + filepath, function(err, stdout, stderr){
 		// Print out the stdout output of the convert script
 		log(stdout);
@@ -151,6 +152,7 @@ function convertFile(filepath){
 				}
 			})
 		}
+		// Converting done, delete the file from "in_progress"
 		exec('unlink in_progress/' + filepath, function(err, stdout, stderr){
 			log(stdout);
 			log(stderr);
