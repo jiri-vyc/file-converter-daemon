@@ -10,5 +10,6 @@ SyslogIdentifier=tpx3-converter-daemon
 User=visualization
 Environment=NODE_ENV=production
 Environment=LD_LIBRARY_PATH=/lib64/root
+WorkingDirectory=/opt/tpx3-converter-daemon/
 [Install]
 WantedBy=multi-user.target
