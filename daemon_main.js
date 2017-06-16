@@ -3,65 +3,113 @@ var exec = require('child_process').exec;
 var fs = require('fs');
 var path = require('path');
 var mkdirp = require('mkdirp');
+var config = require('./config.js');
 
-var maxProcesses = 4;
+var maxProcesses = config.maxProcesses;
 var activeProcesses = 0;
 var files = []; 
-var datapath = '/data/tpx3-visualization-data/';
-var rawdatapath = datapath + 'RAW/';
+var datapath = config.dataPath;
+var rawdatapath = path.join(datapath + 'RAW');
 
+var log = config.logMethod;
 
 var Datastore = require('nedb')
   , db = new Datastore({ filename: 'db/database' });
 
 db.loadDatabase(function (err) {
   if (!err){
-  	console.log("Database successfully loaded.");
+  	log("Database successfully loaded.");
   } else {
-  	console.log(err);
+  	log(err);
   }
 });
 
 
+log('Converter daemon/watcher started...');
 
-console.log('Converter daemon/watcher started...');
+// ============= WATCHER SETUP ======================
 // Watch the ./data directory
-var watcher_new = chokidar.watch(rawdatapath + '/ATLAS/TPX3_9/', 
+var watcher_new = chokidar.watch( path.join(rawdatapath, config.subPath), 
 	{
 		// ignores .dotfiles and files starting with wu- (Web Upload)
 		ignored: /([\/\\]\.|[\/\\]wu-)/,
+		// waits 6 seconds after new file stabilizes (doesn't change in size) in the file system
 		awaitWriteFinish: {
-		    stabilityThreshold: 6000
+		    stabilityThreshold: config.stabilityThreshold
 		  },
+		// ignores files already in the filesystem when starting
 		ignoreInitial: true,
+		// current working directory
 		cwd: rawdatapath
 	});
-console.log('Watching folder "' + rawdatapath + '/ATLAS/TPX3_9/" for new files...');
+log('Watching folder "' + path.join(rawdatapath, config.subPath) + '" for new files...');
+// ==================================================
 
+
+
+// =========== The main watching process ============
 watcher_new.on('add', function(path){
-	console.log('Added file ' + path);
+	log('Added file ' + path);
 	tryToProcessFile(path);
 });
+// ==================================================
 
+
+
+// ========== Watching of in_progress folder ========
 var watcher_progress = chokidar.watch('in_progress',
 	{
 		// ignores .dotfiles and files starting with wu- (Web Upload)
 		ignored: /([\/\\]\.|[\/\\]wu-)/,
-		cwd: 'in_progress'
+		cwd: '.'
 	});
-
+// if the file gets deleted (is no longer in progress - converting is done)
+// ask for another file to convert, if available
 watcher_progress.on('unlink', function(path){
-	console.log("File " + path + " no longer in progress.");
+	log("File " + path + " no longer in progress.");
+	pollForNewFile();
 });
+// ==================================================
+
+var polledFile = "";
+
+function pollForNewFile(){
+	// Find next one file stored for later processing in the database
+	db.findOne({ "failed": false }, function (err, doc) {
+		if (err){
+			log(err);
+		} else if (doc != null){
+			// If the file found was already found by another thread, recursively repeat (find another)
+			// Using JavaScript's basic single-thread nature, no 2 threads can access a variable at the same time by default
+			if (doc._id == polledFile){
+				return pollForNewFile();
+			}
+			// Mark current file as selected
+			polledFile = doc._id;
+			// Remove the selected files from db, preventing further finding/repeated converting
+			db.remove({ _id: doc._id }, {}, function (err, numRemoved) {
+				if (err){
+					log(err);
+				}
+				// Try to convert the file
+				tryToProcessFile(doc.filename);
+			});
+		// No file was found in the database, return and wait for new files
+		} else {
+			log("No other file to process. Waiting for new files.");
+			return;
+		}
+	});
+}
 
 
 function tryToProcessFile(path){
 	// All processes are busy at the moment, store file for later processing
 	if (activeProcesses >= maxProcesses){
-		console.log("All processes busy, storing file for later converting.");
-		db.insert({"filename" : path}, function (err, newDoc) {   
+		log("All processes busy, storing file for later converting.");
+		db.insert({"filename" : path, "failed": false, "additionalInfo": "Stored for later processing."}, function (err, newDoc) {   
 			if (err){
-				console.log(err);
+				log(err);
 			}
 		});
 	// At least one process free, process file immediately
@@ -71,33 +119,41 @@ function tryToProcessFile(path){
 	}
 }
 
+
 function convertFile(filepath){
-	console.log('Starting process converting file ' + filepath);
+	log('Starting process converting file ' + filepath);
 	var filedir = path.dirname(filepath);
 
 	// Create a folder to store the "in progress" file
 	try {
-    	stat = fs.statSync('in_progress/' + filedir);
+    	stat = fs.statSync(path.join('in_progress/', filedir));
 	} catch (err) {
-		console.log("Creating folder " + 'in_progress/' + filedir);
-	    mkdirp.sync('in_progress/' + filedir);
+		log("Creating folder " + path.join('in_progress/', filedir));
+	    mkdirp.sync(path.join('in_progress/', filedir));
 	}
 
 	exec('touch in_progress/' + filepath, function(err, stdout, stderr){
-		console.log(stdout);
-		console.log(stderr);
+		log(stdout);
+		log(stderr);
 	});
 
+	// Start converting
 	exec('node converter_worker.js ' + filepath, function(err, stdout, stderr){
-		if (err) {
-			console.error(err);
-			return;
+		// Print out the stdout output of the convert script
+		log(stdout);
+		// If error happened or converter returned "not ok", log errors and save file as "failed" to database
+		if (err || stderr.startsWith("not ok")) {
+			log("ERROR: " + err);
+			log("RET VALUE: " + stderr);
+			db.insert({"filename": filepath, "failed": true, "error": err, "additionalInfo": stdout}, function(err, newDoc){
+				if (err){
+					log(err);
+				}
+			})
 		}
-		console.log(stdout);
 		exec('unlink in_progress/' + filepath, function(err, stdout, stderr){
-			console.log(stderr);
-			console.log(stdout);
-			console.log(stderr);
+			log(stdout);
+			log(stderr);
 		});
 		activeProcesses--;
 	});

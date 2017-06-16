@@ -3,24 +3,23 @@ var sleep = require('sleep');
 var path = require('path');
 var mkdirp = require('mkdirp');
 var fs = require('fs');
-var datapath = '/data/tpx3-visualization-data/';
-var rawdatapath = datapath + 'RAW/';
-var rootdatapath = datapath + 'ROOT/';
+var config = require('./config.js');
+var datapath = config.dataPath;
+var rawdatapath = path.join(datapath, 'RAW/');
+var rootdatapath = path.join(datapath,'ROOT/');
 
 var filepath = process.argv[2];
 
 var filedir = path.dirname(filepath);
 
+
+// Check if the given folder exists, if not, create it
 try {
     stat = fs.statSync(rootdatapath + filedir);
 } catch (err) {
-	console.log("Creating folder " + rootdatapath + filedir);
+	console.log("Folder did not exist. Creating: " + rootdatapath + filedir);
     mkdirp.sync(rootdatapath + filedir);
 }
 
-console.log(filepath);
-
-tpx3data.convert(filepath, filepath);
-
-console.log('Done converting file: ' + filepath);
+console.error(tpx3data.convert(filepath, filepath));
 
